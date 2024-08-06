@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue study</title>
+</head>
+<body>
+    <div id="app">
+        <form v-on:submit.prevent="submit(text)">
+            <!-- <input type="text" :value="text" @Keyup="updateText"><br> -->
+            <input type="text" v-model="text"><br>
+            {{ text }} <br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                year: 2024,
+                text:'test',
+            },
+            methods: {
+                plus() {
+                    this.year++; 
+                }, 
+                minus() {
+                    this.year--;
+                },
+                submit(text) {
+                    alert(`${text} 제출되었습니다`);
+                    console.log(`${text}`);
+            },
+            // updateText(event) {
+            //     this.text = event.target.value;
+            //     console.log(event);
+            // },
+            }
+        })
+    </script>
+</body>
+</html>
