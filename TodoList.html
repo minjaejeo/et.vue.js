@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    
+</head>
+<body>
+    <div id="app"> 
+        <h1>Todo List</h1>
+        <input v-model="newTodo" @Keyup.enter="addTodo" placeholder="새로운 할 일을 입력하세요">
+        <button @click="addTodo">추가</button>
+        <ul>
+            <li style="list-style: none;" v-for="(todo, index) in todos" :key="index">
+                {{ todo }}
+                <button @click="deleteTodo(index)">삭제</button>
+            </li>
+        </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                newTodo: '',
+                todos: []
+            },
+            methods: {
+                addTodo() {
+                    if(this.newTodo.trim()){
+                        this.todos.push(this.newTodo.trim());
+                        this.newTodo = '';
+                    }
+                },
+                deleteTodo(index){
+                    this.todos.splice(index, 1);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
