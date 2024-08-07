@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        {{ name }}<br>
+        <button @click="changeText">Click</button>
+    </div>
+    <div id="app1">
+        {{ name }}<br>
+        <button @click="changeText">Click</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                name: "minjae"
+            },
+            methods: {
+                changeText() {
+                    app1.name = "minjae";
+                }
+            }
+        })
+        const app1 = new Vue({
+            el: "#app1",
+            data: {
+                name: "sunjae"
+            },
+            methods: {
+                changeText() {
+                    app.name = "sunjae";
+                }
+            }
+        })
+    </script>
+</body>
+</html>

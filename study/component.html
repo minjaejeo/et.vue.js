@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <min></min>
+        <jae></jae>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 전역 컴포넌트
+        // Vue.component('jae', {
+        //     template: `
+        //         <div>나는 민재</div>
+        //     `
+        // })
+        // Vue.component('min', {
+        //     template: `
+        //     <div>
+        //         {{ name }} <br>
+        //         <jae></jae>
+        //         <button @click="changeText">Click</button>
+        //     </div>
+        //     `,
+        //     data() {
+        //         console.log("data");
+        //         return {
+        //             name: 'muuu'
+        //         }
+        //     },
+        //     methods: {
+        //         changeText() {
+        //             console.log("changeText");
+        //             this.name = 'MUUUU';
+        //         }
+        //     },
+        //     beforeCreate() {
+        //         console.log('beforeCreate');
+        //     },
+        //     created() {
+        //         console.log('created');
+        //     },
+        //     beforeMount() {
+        //         console.log('beforeMount');
+        //     },
+        //     mounted() {
+        //         console.log('mounted');
+        //     },
+        //     beforeUpdate() {
+        //         console.log('beforeUpdate');
+        //     },
+        //     updated() {
+        //         console.log('updated');
+        //     },
+        //     beforeDestroy() {
+        //         console.log('beforeDestroy');
+        //     },
+        //     destroyed() {
+        //         console.log('destroyed');
+        //     }
+        // });
+
+        // 지역 컴포넌트
+        const JaeComponent = {
+            template: `
+                <div>나는 민재</div>
+            `
+        }
+
+        const MinComponent = {
+            components: {
+                jae: JaeComponent
+            },
+            template: `
+            <div>
+                {{ name }} <br>
+                <jae></jae>
+                <button @click="changeText">Click</button>
+            </div>
+            `,
+            data() {
+                console.log("data");
+                return {
+                    name: 'muuu'
+                }
+            },
+            methods: {
+                changeText() {
+                    console.log("changeText");
+                    this.name = 'MUUUU';
+                }
+            },
+            beforeCreate() {
+                console.log('beforeCreate');
+            },
+            created() {
+                console.log('created');
+            },
+            beforeMount() {
+                console.log('beforeMount');
+            },
+            mounted() {
+                console.log('mounted');
+            },
+            beforeUpdate() {
+                console.log('beforeUpdate');
+            },
+            updated() {
+                console.log('updated');
+            },
+            beforeDestroy() {
+                console.log('beforeDestroy');
+            },
+            destroyed() {
+                console.log('destroyed');
+            }
+        }
+        
+        new Vue({
+            el: '#app',
+            components: {
+                min: MinComponent,
+                jae: JaeComponent
+            }
+        });
+    </script>
+</body>
+</html>

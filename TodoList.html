@@ -12,8 +12,8 @@
         <input v-model="newTodo" @Keyup.enter="addTodo" placeholder="새로운 할 일을 입력하세요">
         <button @click="addTodo">추가</button>
         <ul>
-            <li style="list-style: none;" v-for="(todo, index) in todos" :key="index">
-                {{ todo }}
+            <li style="list-style: none;" v-for="(todo, id) in todos" :key="id">
+                {{ todo.name }}
                 <button @click="deleteTodo(index)">삭제</button>
             </li>
         </ul>
@@ -24,7 +24,11 @@
             el: '#app',
             data: {
                 newTodo: '',
-                todos: ['강아지 산책', '설거지', '빨래']
+                todos: [
+                    {id: 1, name: '강아지 산책'}, 
+                    {id: 2, name: '설거지'}, 
+                    {id: 3, name: '빨래'}
+                ]
             },
             methods: {
                 addTodo() {
