@@ -6,7 +6,7 @@
     <title>뷰 기초 익히기</title>
 </head>
 <body>
-    <div id="app">
+    <div class="app">
         {{ message}} <br>
         <button @click="changeMessage">Click</button>
         {{ updated}}<br>
@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
         new Vue({
-            el: '#app',
+            el: '.app',
             data: {
                 message: '헬로우',
                 updated: '아니오'
@@ -37,6 +37,30 @@
                     console.log(newVal, oldVal);
                     this.updated = '네';
                 }
+            },
+            beforeCreate() {
+                console.log('beforeCreate');
+            },
+            created() {
+                console.log('created');
+            },
+            beforeMount() {
+                console.log('beforeMount');
+            },
+            mounted() {
+                console.log('mounted');
+            },
+            beforeUpdate() {
+                console.log('beforeUpdate');
+            },
+            updated() {
+                console.log('updated');
+            },
+            beforeDestroy() {
+                console.log('beforeDestroy');
+            },
+            destroyed() {
+                console.log('destroyed');
             }
         })
     </script>
