@@ -11,9 +11,18 @@
         <h1>Todo List</h1>
         <input v-model="newTodo" @Keyup.enter="addTodo" placeholder="새로운 할 일을 입력하세요">
         <button @click="addTodo">추가</button>
+
+        <div>
+            <input type="checkbox" id="selectAll" v-model="selectAll" @change="toggleAll">
+            <label for="selectAll">전체 선택</label>
+        </div>
+
         <ul>
-            <li style="list-style: none;" v-for="(todo, id) in todos" :key="id">
-                {{ todo.name }}
+            <li style="list-style: none;" v-for="(todo, index) in todos" :key="todo.id">
+                <input type="checkbox" v-model="todo.completed" @change="updateSelectAll">
+                <span :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}">
+                    {{ todo.name }}
+                </span>
                 <button @click="deleteTodo(index)">삭제</button>
             </li>
         </ul>
@@ -25,20 +34,31 @@
             data: {
                 newTodo: '',
                 todos: [
-                    {id: 1, name: '강아지 산책'}, 
-                    {id: 2, name: '설거지'}, 
-                    {id: 3, name: '빨래'}
-                ]
+                    {id: 1, name: '강아지 산책', completed: false}, 
+                    {id: 2, name: '설거지', completed: false}, 
+                    {id: 3, name: '빨래', completed: false}
+                ],
+                selectAll: false
             },
             methods: {
                 addTodo() {
                     if(this.newTodo.trim()){
-                        this.todos.push(this.newTodo.trim());
+                        this.todos.push({
+                            id: this.todos.length + 1,
+                            name: this.newTodo.trim(),
+                            completed: false
+                        });
                         this.newTodo = '';
                     }
                 },
                 deleteTodo(index){
                     this.todos.splice(index, 1);
+                },
+                toggleAll() {
+                    this.todos.forEach(todo => todo.completed = this.selectAll);
+                },
+                updateSelectAll() {
+                    this.selectAll = this.todos.every(todo => todo.completed);
                 }
             },
             beforeCreate() {
