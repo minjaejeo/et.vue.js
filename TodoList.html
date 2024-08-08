@@ -15,6 +15,8 @@
         <div>
             <input type="checkbox" id="selectAll" v-model="selectAll" @change="toggleAll">
             <label for="selectAll">전체 선택</label>
+            <button @click="deleteAllCompleted">선택된 항목 삭제</button>
+            <button @click="deleteAll">전체 삭제</button>
         </div>
 
         <ul>
@@ -38,13 +40,14 @@
                     {id: 2, name: '설거지', completed: false}, 
                     {id: 3, name: '빨래', completed: false}
                 ],
-                selectAll: false
+                selectAll: false,
+                nextTodoId: 4
             },
             methods: {
                 addTodo() {
                     if(this.newTodo.trim()){
                         this.todos.push({
-                            id: this.todos.length + 1,
+                            id: this.nextTodoId++,
                             name: this.newTodo.trim(),
                             completed: false
                         });
@@ -53,12 +56,21 @@
                 },
                 deleteTodo(index){
                     this.todos.splice(index, 1);
+                    this.updateSelectAll();
                 },
                 toggleAll() {
                     this.todos.forEach(todo => todo.completed = this.selectAll);
                 },
                 updateSelectAll() {
-                    this.selectAll = this.todos.every(todo => todo.completed);
+                    this.selectAll = this.todos.length > 0 && this.todos.every(todo => todo.completed);
+                },
+                deleteAllCompleted() {
+                    this.todos = this.todos.filter(todo => !todo.completed);
+                    this.updateSelectAll();
+                },
+                deleteAll() {
+                    this.todos = [];
+                    this.selectAll = false;
                 }
             },
             beforeCreate() {
