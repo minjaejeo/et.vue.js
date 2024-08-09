@@ -39,7 +39,13 @@
             <button @click="setFilter('completed')" :class="{ active: currentFilter === 'completed' }">완료됨</button>
         </div>
 
-        <ul>
+        <p v-if="filteredTodos.length === 0">
+            <span v-if="currentFilter === 'all'">할 일이 없습니다. 할 일을 입력하세요.</span>
+            <span v-else-if="currentFilter === 'active'">미완료 상태가 없습니다.</span>
+            <span v-else-if="currentFilter === 'completed'">완료된 상태가 없습니다.</span>
+        </p>
+
+        <ul v-else>
             <li style="list-style: none;" v-for="(todo, index) in filteredTodos" :key="todo.id" :class="{'editing-mode': todo.editing}">
                 <input type="checkbox" v-model="todo.completed" @change="updateSelectAll">
                 <span class="todo-text" :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}">
