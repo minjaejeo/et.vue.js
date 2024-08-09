@@ -14,6 +14,9 @@
         .editing-mode .todo-text {
             display: none;
         }
+        .active {
+            font-weight: bold;
+        }
     </style>
     
 </head>
@@ -30,8 +33,14 @@
             <button @click="deleteAll">전체 삭제</button>
         </div>
 
+        <div>
+            <button @click="setFilter('all')" :class="{ active: currentFilter === 'all' }">전체</button>
+            <button @click="setFilter('active')" :class="{ active: currentFilter === 'active' }">미완료</button>
+            <button @click="setFilter('completed')" :class="{ active: currentFilter === 'completed' }">완료됨</button>
+        </div>
+
         <ul>
-            <li style="list-style: none;" v-for="(todo, index) in todos" :key="todo.id" :class="{'editing-mode': todo.editing}">
+            <li style="list-style: none;" v-for="(todo, index) in filteredTodos" :key="todo.id" :class="{'editing-mode': todo.editing}">
                 <input type="checkbox" v-model="todo.completed" @change="updateSelectAll">
                 <span class="todo-text" :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}">
                     {{ todo.name }}
@@ -54,7 +63,18 @@
                     {id: 3, name: '빨래', completed: false, editing: false, editingName: ''}
                 ],
                 selectAll: false,
-                nextTodoId: 4
+                nextTodoId: 4,
+                currentFilter: 'all'
+            },
+            computed: {
+                filteredTodos() {
+                    if(this.currentFilter === 'active') {
+                        return this.todos.filter(todo => !todo.completed);
+                    }else if (this.currentFilter === 'completed') {
+                        return this.todos.filter(todo => todo.completed);
+                    }
+                    return this.todos;
+                }
             },
             methods: {
                 addTodo() {
@@ -99,6 +119,9 @@
                         this.deleteTodo(this.todos.indexOf(todo));
                     }
                 },
+                setFilter(filter) {
+                    this.currentFilter = filter;
+                }
             },
             beforeCreate() {
                 console.log('beforeCreate');
