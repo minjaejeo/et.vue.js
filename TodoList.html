@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <style>
+        .editing {
+            display: none;
+        }
+        .editing-mode .editing {
+            display: inline-block;
+        }
+        .editing-mode .todo-text {
+            display: none;
+        }
+    </style>
     
 </head>
 <body>
@@ -20,12 +31,14 @@
         </div>
 
         <ul>
-            <li style="list-style: none;" v-for="(todo, index) in todos" :key="todo.id">
+            <li style="list-style: none;" v-for="(todo, index) in todos" :key="todo.id" :class="{'editing-mode': todo.editing}">
                 <input type="checkbox" v-model="todo.completed" @change="updateSelectAll">
-                <span :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}">
+                <span class="todo-text" :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}">
                     {{ todo.name }}
                 </span>
+                <input class="editing" v-model="todo.editingName" @keyup.enter="doneEdit(todo)" @blur="doneEdit(todo)">
                 <button @click="deleteTodo(index)">삭제</button>
+                <button @click="editTodo(todo)">수정</button>
             </li>
         </ul>
     </div>
@@ -36,9 +49,9 @@
             data: {
                 newTodo: '',
                 todos: [
-                    {id: 1, name: '강아지 산책', completed: false}, 
-                    {id: 2, name: '설거지', completed: false}, 
-                    {id: 3, name: '빨래', completed: false}
+                    {id: 1, name: '강아지 산책', completed: false, editing: false, editingName: ''}, 
+                    {id: 2, name: '설거지', completed: false, editing: false, editingName: ''}, 
+                    {id: 3, name: '빨래', completed: false, editing: false, editingName: ''}
                 ],
                 selectAll: false,
                 nextTodoId: 4
@@ -49,7 +62,9 @@
                         this.todos.push({
                             id: this.nextTodoId++,
                             name: this.newTodo.trim(),
-                            completed: false
+                            completed: false,
+                            editing: false,
+                            editingName: ''
                         });
                         this.newTodo = '';
                     }
@@ -71,7 +86,19 @@
                 deleteAll() {
                     this.todos = [];
                     this.selectAll = false;
-                }
+                },
+                editTodo(todo) {
+                    todo.editing = true;
+                    todo.editingName = todo.name;
+                },
+                doneEdit(todo) {
+                    if(!todo.editing) return;
+                    todo.editing = false;
+                    todo.name = todo.editingName.trim();
+                    if(!todo.name) {
+                        this.deleteTodo(this.todos.indexOf(todo));
+                    }
+                },
             },
             beforeCreate() {
                 console.log('beforeCreate');
