@@ -52,7 +52,7 @@
                     {{ todo.name }}
                 </span>
                 <input class="editing" v-model="todo.editingName" @keyup.enter="doneEdit(todo)" @blur="doneEdit(todo)">
-                <button @click="deleteTodo(index)">삭제</button>
+                <button @click="deleteTodo(todo.id)">삭제</button>
                 <button @click="editTodo(todo)">수정</button>
             </li>
         </ul>
@@ -63,13 +63,9 @@
             el: '#app',
             data: {
                 newTodo: '',
-                todos: [
-                    {id: 1, name: '강아지 산책', completed: false, editing: false, editingName: ''}, 
-                    {id: 2, name: '설거지', completed: false, editing: false, editingName: ''}, 
-                    {id: 3, name: '빨래', completed: false, editing: false, editingName: ''}
-                ],
+                todos: [],
                 selectAll: false,
-                nextTodoId: 4,
+                nextTodoId: 1,
                 currentFilter: 'all'
             },
             computed: {
@@ -93,14 +89,20 @@
                             editingName: ''
                         });
                         this.newTodo = '';
+                        this.saveTodos();
                     }
                 },
-                deleteTodo(index){
-                    this.todos.splice(index, 1);
-                    this.updateSelectAll();
+                deleteTodo(id){
+                    const index = this.todos.findIndex(todo => todo.id === id);
+                    if(index !== -1) {
+                        this.todos.splice(index, 1);
+                        this.updateSelectAll();
+                        this.saveTodos();
+                    }
                 },
                 toggleAll() {
                     this.todos.forEach(todo => todo.completed = this.selectAll);
+                    this.saveTodos();
                 },
                 updateSelectAll() {
                     this.selectAll = this.todos.length > 0 && this.todos.every(todo => todo.completed);
@@ -108,10 +110,12 @@
                 deleteAllCompleted() {
                     this.todos = this.todos.filter(todo => !todo.completed);
                     this.updateSelectAll();
+                    this.saveTodos();
                 },
                 deleteAll() {
                     this.todos = [];
                     this.selectAll = false;
+                    this.saveTodos();
                 },
                 editTodo(todo) {
                     todo.editing = true;
@@ -122,17 +126,33 @@
                     todo.editing = false;
                     todo.name = todo.editingName.trim();
                     if(!todo.name) {
-                        this.deleteTodo(this.todos.indexOf(todo));
+                        this.deleteTodo(todo.id);
                     }
+                    this.saveTodos();
                 },
                 setFilter(filter) {
                     this.currentFilter = filter;
+                },
+                saveTodos() {
+                    localStorage.setItem('todos', JSON.stringify(this.todos, null, 2));
+                    localStorage.setItem('nextTodoId', this.nextTodoId);
+                },
+                loadTodos() {
+                    const savedTodos = localStorage.getItem('todos');
+                    if(savedTodos) {
+                        this.todos = JSON.parse(savedTodos);
+                    }
+                    const savedNextTodoId = localStorage.getItem('nextTodoId');
+                    if(savedNextTodoId) {
+                        this.nextTodoId = parseInt(savedNextTodoId);
+                    }
                 }
             },
             beforeCreate() {
                 console.log('beforeCreate');
             },
             created() {
+                this.loadTodos();
                 console.log('created');
             },
             beforeMount() {
