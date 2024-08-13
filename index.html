@@ -31,6 +31,21 @@
         <button @click="addTodo">추가</button>
 
         <div>
+            <button 
+                @click="setFilter('all')" 
+                :class="{ active: currentFilter === 'all' }"
+            >전체</button>
+            <button 
+                @click="setFilter('active')" 
+                :class="{ active: currentFilter === 'active' }"
+            >미완료</button>
+            <button 
+                @click="setFilter('completed')" 
+                :class="{ active: currentFilter === 'completed' }"
+            >완료됨</button>
+        </div>
+
+        <div>
             <input 
                 type="checkbox"
                 id="selectAll" 
@@ -38,29 +53,8 @@
                 @change="toggleAll"
             >
             <label for="selectAll">전체 선택</label>
-            <button @click="deleteAllCompleted">선택된 항목 삭제</button>
+            <button @click="deleteSelected">선택된 항목 삭제</button>
             <button @click="deleteAll">전체 삭제</button>
-        </div>
-
-        <div>
-            <button 
-                @click="setFilter('all')" 
-                :class="{ active: currentFilter === 'all' }"
-            >
-                전체
-            </button>
-            <button 
-                @click="setFilter('active')" 
-                :class="{ active: currentFilter === 'active' }"
-            >
-                미완료
-            </button>
-            <button 
-                @click="setFilter('completed')" 
-                :class="{ active: currentFilter === 'completed' }"
-            >
-                완료됨
-            </button>
         </div>
 
         <p v-if="filteredTodos.length === 0">
@@ -78,15 +72,13 @@
             >
                 <input
                     type="checkbox"
-                    v-model="todo.completed"
+                    v-model="todo.selected"
                     @change="updateSelectAll"
                 >
                 <span
                     class="todo-text"
-                    :style="{ textDecoration: todo.completed ? 'line-through' : 'none'}"
-                >
-                    {{ todo.name }}
-                </span>
+                    :style="{ textDecoration: todo.status === 'completed' ? 'line-through' : 'none'}"
+                >{{ todo.name }}</span>
                 <input
                     class="editing"
                     v-model="todo.editingName"
@@ -95,6 +87,9 @@
                 >
                 <button @click="deleteTodo(todo.id)">삭제</button>
                 <button @click="editTodo(todo)">수정</button>
+                <button @click="toggleCompletion(todo)">
+                    {{ todo.status === 'completed' ? '미완료': '완료'}}
+                </button>
             </li>
         </ul>
     </div>
@@ -111,12 +106,14 @@
             },
             computed: {
                 filteredTodos() {
-                    if(this.currentFilter === 'active') {
-                        return this.todos.filter(todo => !todo.completed);
-                    }else if (this.currentFilter === 'completed') {
-                        return this.todos.filter(todo => todo.completed);
+                    switch (this.currentFilter) {
+                        case 'active':
+                            return this.todos.filter(todo => todo.status === 'active');
+                        case 'completed':
+                            return this.todos.filter(todo => todo.status === 'completed');
+                        default:
+                            return this.todos;
                     }
-                    return this.todos;
                 }
             },
             methods: {
@@ -125,36 +122,42 @@
                         this.todos.push({
                             id: this.nextTodoId++,
                             name: this.newTodo.trim(),
+                            status: 'active',
                             completed: false,
                             editing: false,
-                            editingName: ''
+                            editingName: '',
+                            selected: false
                         });
                         this.newTodo = '';
                         this.saveTodos();
+                        this.updateSelectAll();
                     }
                 },
                 deleteTodo(id){
-                    const index = this.todos.findIndex(todo => todo.id === id);
-                    if(index !== -1) {
-                        this.todos.splice(index, 1);
-                        this.updateSelectAll();
-                        this.saveTodos();
-                    }
-                },
-                toggleAll() {
-                    this.todos.forEach(todo => todo.completed = this.selectAll);
+                    this.todos = this.todos.filter(todo => todo.id !== id);
+                    this.updateSelectAll();
                     this.saveTodos();
                 },
-                updateSelectAll() {
-                    this.selectAll = this.todos.length > 0 && this.todos.every(todo => todo.completed);
+                toggleAll() {
+                    this.filteredTodos.forEach(todo => todo.selected = this.selectAll);
                 },
-                deleteAllCompleted() {
-                    this.todos = this.todos.filter(todo => !todo.completed);
+                deleteSelected() {
+                    this.todos = this.todos.filter(todo => !todo.selected);
                     this.updateSelectAll();
                     this.saveTodos();
                 },
                 deleteAll() {
-                    this.todos = [];
+                    switch(this.currentFilter) {
+                        case 'all':
+                            this.todos = [];
+                            break;
+                        case 'active':
+                        case 'completed':
+                            this.todos = this.todos.filter(todo => todo.status !== this.currentFilter);
+                            break;
+                        default:
+                            break;
+                    }
                     this.selectAll = false;
                     this.saveTodos();
                 },
@@ -171,11 +174,25 @@
                     }
                     this.saveTodos();
                 },
+                toggleCompletion(todo) {
+                    todo.status = todo.status === 'active' ? 'completed' : 'active';
+                    this.saveTodos();
+                    this.updateSelectAll();
+                },
                 setFilter(filter) {
                     this.currentFilter = filter;
+                    this.updateSelectAll();
+                    this.updateSelectAllState();
+                },
+                updateSelectAll() {
+                    this.selectAll = this.filteredTodos.length > 0 && this.filteredTodos.every(todo => todo.selected);
+                },
+                updateSelectAllState() {
+                    this.selectAll = false;
+                    this.filteredTodos.forEach(todo => todo.selected = false);
                 },
                 saveTodos() {
-                    localStorage.setItem('todos', JSON.stringify(this.todos, null, 2));
+                    localStorage.setItem('todos', JSON.stringify(this.todos));
                     localStorage.setItem('nextTodoId', this.nextTodoId);
                 },
                 loadTodos() {
