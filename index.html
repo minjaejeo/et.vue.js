@@ -87,7 +87,10 @@
                 >
                 <button @click="deleteTodo(todo.id)">삭제</button>
                 <button @click="editTodo(todo)">수정</button>
-                <button @click="toggleCompletion(todo)">
+                <button 
+                    @click="toggleCompletion(todo)"
+                    :disabled="todo.editing"
+                >
                     {{ todo.status === 'completed' ? '미완료': '완료'}}
                 </button>
             </li>
@@ -131,6 +134,8 @@
                         this.newTodo = '';
                         this.saveTodos();
                         this.updateSelectAll();
+                    } else {
+                        alert('할 일을 입력하세요')
                     }
                 },
                 deleteTodo(id){
@@ -162,19 +167,29 @@
                     this.saveTodos();
                 },
                 editTodo(todo) {
+                    if(todo.name.trim() === '') {
+                        alert('할 일 이름이 비어 있어 수정할 수 없습니다.')
+                        return;
+                    }
                     todo.editing = true;
                     todo.editingName = todo.name;
                 },
                 doneEdit(todo) {
                     if(!todo.editing) return;
-                    todo.editing = false;
                     todo.name = todo.editingName.trim();
-                    if(!todo.name) {
-                        this.deleteTodo(todo.id);
+                    if(todo.editingName === '') {
+                        alert('할 일 이름이 비어 있어 수정할 수 없습니다.');
+                        return;
+                    }else {
+                        todo.name = todo.editingName;
                     }
+                    todo.editing = false;
                     this.saveTodos();
                 },
                 toggleCompletion(todo) {
+                    if(todo.editing) {
+                        return;
+                    }
                     todo.status = todo.status === 'active' ? 'completed' : 'active';
                     this.saveTodos();
                     this.updateSelectAll();
