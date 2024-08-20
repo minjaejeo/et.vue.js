@@ -10,18 +10,33 @@
 
 <script>
 import axios from 'axios';
-import { API_KEY } from '../config';
+import { API_KEY } from '../../process.env';
 
 export default {
+    props: {
+        page: {
+            type: Number,
+            required: true,
+            default: 1,
+        }
+    },
     data() {
         return {
             selectedCategory: 'business',
             data: [],
         };
     },
+    watch: {
+        page() {
+            this.fetchNews();
+        },
+        selectedCategory() {
+            this.fetchNews();
+        }
+    },
     methods: {
         async fetchNews() {
-            const url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.selectedCategory}&apiKey=${API_KEY}`;
+            const url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.selectedCategory}&page=${this.page}&apiKey=${API_KEY}`;
             try {
                 const response = await axios.get(url);
                 this.data = response.data;
