@@ -3,7 +3,10 @@
         <select v-model="selectedCategory" @change="fetchNews">
             <option value="business">Business</option>
             <option value="technology">Technology</option>
+            <option value="science">Science</option>
             <option value="sports">Sports</option>
+            <option value="health">Health</option>
+            <option value="entertainment">Entertainment</option>
         </select>
     </div>
 </template>
@@ -27,10 +30,10 @@ export default {
         };
     },
     watch: {
-        page() {
-            this.fetchNews();
-        },
         selectedCategory() {
+            this.$emit('update:page', 1);
+        },
+        page() {
             this.fetchNews();
         }
     },

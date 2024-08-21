@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>News Feed</h1>
-        <NewsCategory :page="page" @newsFetched="updateNews" />
+        <NewsCategory :page="page" @update:page="page = $event" @newsFetched="updateNews"  />
         <ul v-if="articles.length">
             <li style="list-style: none;" v-for="(article, index) in articles" :key="index">
                 {{ article.title }}
@@ -29,18 +29,18 @@ export default {
             page: 1,
         };
     },
-    created() {
-
-    },
     methods: {
+        // news articles 추출
         updateNews(data) {
             this.articles = data.articles;
         },
+        // 이전 페이지
         prevPage() {
             if (this.page > 1) {
                 this.page--;
             }
         },
+        // 다음 페이지
         nextPage() {
             this.page++;
         }
